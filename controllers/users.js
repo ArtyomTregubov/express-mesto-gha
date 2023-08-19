@@ -41,27 +41,65 @@ const getUser = async (req, res) => {
   }
 };
 
-const updateUser = (id, params, res) => {
-  User.findByIdAndUpdate(id, params, { new: true })
+// const updateUser = (id, params, res) => {
+//   User.findByIdAndUpdate(id, params, { new: true })
+//     .then((user) => {
+//       res.send(user);
+//     })
+//     .catch((err) => {
+//       res.status(ERROR_CODE_400).send(err);
+//     });
+// };
+//
+// const updateProfileInfo = async (req, res) => {
+//   const { name, about } = req.body;
+//   const userId = req.user._id;
+//   updateUser(userId, { name, about }, res);
+// };
+//
+// const updateAvatar = async (req, res) => {
+//   const { avatar } = req.body;
+//   const userId = req.user._id;
+//   updateUser(userId, { avatar }, res);
+// };
+
+const updateProfileInfo = (req, res, next) => {
+  const { name, about } = req.body;
+  const { _id } = req.user;
+
+  User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        throw new Error({message: "User not found"});
+      }
+
+      res.send({ data: user });
     })
     .catch((err) => {
-      res.status(ERROR_CODE_400).send(err);
+      if (err.name === 'ValidationError') {
+        next(new Error({message: "Incorrect data"}));
+      } else {
+        next(err);
+      }
     });
 };
 
-const updateProfileInfo = async (req, res) => {
-  const { name, about } = req.body;
-  const userId = req.user._id;
-  updateUser(userId, { name, about }, res);
+// Обновление аватара
+const updateAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  const { _id } = req.user;
+
+  User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) {
+        throw new Error({message: "User not found"});
+      }
+
+      res.send({ data: user });
+    })
+    .catch(next);
 };
 
-const updateAvatar = async (req, res) => {
-  const { avatar } = req.body;
-  const userId = req.user._id;
-  updateUser(userId, { avatar }, res);
-};
 
 const getUsers = async (req, res) => {
   try {
