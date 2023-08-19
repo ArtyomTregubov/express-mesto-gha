@@ -44,7 +44,7 @@ const getUser = async (req, res) => {
 const updateUser = (id, params, res) => {
   User.findByIdAndUpdate(id, params, { new: true })
     .then((user) => {
-      res.status(SUCCESS_CREATE_CODE_201).send(user);
+      res.send(user);
     })
     .catch((err) => {
       res.status(ERROR_CODE_400).send(err);
@@ -52,13 +52,13 @@ const updateUser = (id, params, res) => {
 };
 
 const updateProfileInfo = async (req, res) => {
-  const { _id, name, about } = req.query;
-  updateUser(_id, { name, about }, res);
+  const { name, about } = req.body;
+  updateUser(req.user._id, { name, about }, res);
 };
 
 const updateAvatar = async (req, res) => {
-  const { _id, avatar } = req.query;
-  updateUser(_id, { avatar }, res);
+  const { avatar } = req.body;
+  updateUser(req.user._id, { avatar }, res);
 };
 
 const getUsers = async (req, res) => {
