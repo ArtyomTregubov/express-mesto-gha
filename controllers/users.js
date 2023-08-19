@@ -47,7 +47,7 @@ const updateUser = (id, params, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send(err);
         return;
       }
@@ -64,43 +64,6 @@ const updateAvatar = async (req, res) => {
   const { avatar } = req.body;
   updateUser(req.user._id, { avatar }, res);
 };
-
-// const updateProfileInfo = (req, res, next) => {
-//   const { name, about } = req.body;
-//   const { _id } = req.user;
-//
-//   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
-//     .then((user) => {
-//       if (!user) {
-//         throw new Error({message: "User not found"});
-//       }
-//
-//       res.send({ data: user });
-//     })
-//     .catch((err) => {
-//       if (err.name === 'ValidationError') {
-//         next(new Error({message: "Incorrect data"}));
-//       } else {
-//         next(err);
-//       }
-//     });
-// };
-//
-// // Обновление аватара
-// const updateAvatar = (req, res, next) => {
-//   const { avatar } = req.body;
-//   const { _id } = req.user;
-//
-//   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
-//     .then((user) => {
-//       if (!user) {
-//         throw new Error({message: "User not found"});
-//       }
-//
-//       res.send({ data: user });
-//     })
-//     .catch(next);
-// };
 
 
 const getUsers = async (req, res) => {
