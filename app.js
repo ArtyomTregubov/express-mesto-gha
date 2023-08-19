@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const URI_MONGO = 'mongodb://localhost:27017/mestodb'
 
-mongoose.connect('mongodb://admin:admin@127.0.0.1:27017/mestodb?authSource=admin');
+mongoose.connect(URI_MONGO);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
