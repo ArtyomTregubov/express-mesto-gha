@@ -42,12 +42,16 @@ const getUser = async (req, res) => {
 };
 
 const updateUser = (id, params, res) => {
-  User.findByIdAndUpdate(id, params, { new: true })
+  User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
-      res.status(ERROR_CODE_400).send(err);
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send(err);
+        return;
+      }
+    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
     });
 };
 
