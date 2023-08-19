@@ -30,7 +30,7 @@ const getUser = async (req, res) => {
       res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Пользователь не найден' });
       return;
     }
-    const { name, about, avatar } = user;
+    const { name, about, avatar } = user[0];
     res.send({ name, about, avatar });
   } catch (err) {
     if (err.name === 'CastError') {
@@ -52,13 +52,13 @@ const updateUser = (id, params, res) => {
 };
 
 const updateProfileInfo = async (req, res) => {
-  const { name, about } = req.body;
-  updateUser(req.user._id, { name, about }, res);
+  const { _id, name, about } = req.query;
+  updateUser(_id, { name, about }, res);
 };
 
 const updateAvatar = async (req, res) => {
-  const { avatar } = req.body;
-  updateUser(req.user._id, { avatar }, res);
+  const { _id, avatar } = req.query;
+  updateUser(_id, { avatar }, res);
 };
 
 const getUsers = async (req, res) => {
