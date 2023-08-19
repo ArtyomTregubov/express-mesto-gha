@@ -25,9 +25,18 @@ const createUser = (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const users = await User.find({ _id: id });
-    res.send(users);
+    const user = await User.find({ _id: id });
+    if (user.length === 0) {
+      res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Пользователь не найден' });
+      return;
+    }
+    const { name, about, avatar } = user;
+    res.send({ name, about, avatar });
   } catch (err) {
+    if (err.name === 'CastError') {
+      res.status(ERROR_CODE_400).send(err);
+      return;
+    }
     res.status(ERROR_NOT_FOUND_CODE_404).send(err);
   }
 };
@@ -43,7 +52,7 @@ const updateUser = (id, params, res) => {
 };
 
 const updateProfileInfo = async (req, res) => {
-  const { _id, name, about } = req.query;
+  const { _id, name, about } = req.user;
   updateUser(_id, { name, about }, res);
 };
 
