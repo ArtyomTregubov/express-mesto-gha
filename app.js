@@ -21,9 +21,13 @@ db.once('open', () => {
 
 const req = {};
 
-req.user = {
-  _id: '5d8b8592978f8bd833ca8133'
-};
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64e0a30776df3d30e45511ba'
+  };
+
+  next();
+});
 
 app.use('/', routerUsers);
 app.use('/cards', routerCards);
