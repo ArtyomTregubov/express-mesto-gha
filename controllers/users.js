@@ -53,12 +53,14 @@ const updateUser = (id, params, res) => {
 
 const updateProfileInfo = async (req, res) => {
   const { name, about } = req.body;
-  updateUser(req.user._id, { name, about }, res);
+  const userId = req.user._id;
+  updateUser(userId, { name, about }, res);
 };
 
 const updateAvatar = async (req, res) => {
   const { avatar } = req.body;
-  updateUser(req.user._id, { avatar }, res);
+  const userId = req.user._id;
+  updateUser(userId, { avatar }, res);
 };
 
 const getUsers = async (req, res) => {
