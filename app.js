@@ -18,6 +18,8 @@ db.once('open', () => {
   console.log('MongoDB connection success!');
 });
 
+const req = {};
+
 req.user = {
   _id: '5d8b8592978f8bd833ca8133'
 };
