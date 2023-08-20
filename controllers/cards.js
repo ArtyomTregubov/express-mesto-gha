@@ -1,11 +1,9 @@
 const Card = require('../models/card');
-
 const {
   SUCCESS_CODE_200,
   ERROR_CODE_400, SUCCESS_CREATE_CODE_201, ERROR_NOT_FOUND_CODE_404,
 } = require('../const/errors_code');
-const User = require("../models/user");
-// DELETE /cards/:cardId — удаляет карточку по идентификатору
+
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({ });
@@ -14,16 +12,6 @@ const getCards = async (req, res) => {
     res.status(ERROR_CODE_400).send(err);
   }
 };
-
-// const likeCard = (req, res) => Card.findByIdAndUpdate(
-//   req.query.cardId,
-//   { $addToSet: { likes: req.query._id } },
-//   { new: true },
-// ).then((like) => {
-//   res.status(SUCCESS_CODE_200).send({});
-// }).catch((err) => {
-//   res.status(ERROR_CODE_400).send(err);
-// });
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
