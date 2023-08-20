@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
+const {unknownLink} = require("./controllers/users");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,5 +32,5 @@ app.use((req, res, next) => {
 
 app.use('/', routerUsers);
 app.use('/', routerCards);
-
+app.get("*", unknownLink)
 app.listen(3000);

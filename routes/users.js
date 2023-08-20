@@ -13,6 +13,4 @@ router.patch('/users/me', updateProfileInfo);
 
 router.patch('/users/me/avatar', updateAvatar);
 
-router.get('*', unknownLink);
-
 module.exports = router;
