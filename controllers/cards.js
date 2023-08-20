@@ -77,8 +77,10 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => Card.deleteOne(
-  req.params.cardId
+const deleteCard = (req, res) => {
+  const {_id:cardId} = req.params;
+  Card.deleteOne(
+  cardId
 ).then((card) => {
   res.status(SUCCESS_CODE_200).send(card);
 }).catch((err) => {
@@ -88,6 +90,7 @@ const deleteCard = (req, res) => Card.deleteOne(
       }
     res.status(ERROR_NOT_FOUND_CODE_404).send(err);
 });
+}
 
 
 module.exports = {
