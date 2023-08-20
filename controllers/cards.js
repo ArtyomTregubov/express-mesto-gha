@@ -1,5 +1,4 @@
 const Card = require('../models/card');
-const { ObjectId } = require('mongoose').Types;
 
 const {
   SUCCESS_CODE_200,
@@ -37,8 +36,8 @@ const dislikeCard = (req, res) => Card.findByIdAndUpdate(
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-
-  Card.create({  name, link, owner: ObjectId(req.user._id) }, { runValidators: true })
+  const owner = req.user._id
+  Card.create({  name, link, owner })
     .then((card) => {
       res.status(SUCCESS_CREATE_CODE_201).send({
         _id: card._id,
