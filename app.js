@@ -32,5 +32,5 @@ app.use((req, res, next) => {
 
 app.use('/', routerUsers);
 app.use('/', routerCards);
-app.get("*", unknownLink)
+app.use("*", unknownLink);
 app.listen(3000);
