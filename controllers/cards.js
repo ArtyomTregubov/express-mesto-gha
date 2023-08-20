@@ -78,13 +78,21 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const {_id:cardId} = req.params;
+  const {cardId} = req.params;
   Card.deleteOne(
-  cardId
+  {_id:cardId}, {runValidators: true }
 ).then((card) => {
+  if(!card.deletedCount){
+    res.status(ERROR_NOT_FOUND_CODE_404).send({message: "Карточки не существует"});
+    return
+  }
   res.status(SUCCESS_CODE_200).send(card);
 }).catch((err) => {
   if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE_400).send(err);
+        return;
+      }
+  else if(err.name === 'CastError') {
         res.status(ERROR_CODE_400).send(err);
         return;
       }

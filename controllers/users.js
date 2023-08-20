@@ -75,10 +75,15 @@ const getUsers = async (req, res) => {
   }
 };
 
+const unknownLink = (req, res) => {
+  res.status(ERROR_NOT_FOUND_CODE_404).send({message: "Некорректный путь"});
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateProfileInfo,
   updateAvatar,
+  unknownLink
 };
