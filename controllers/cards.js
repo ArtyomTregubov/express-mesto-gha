@@ -39,18 +39,6 @@ const likeCard = (req, res) => {
 }).catch((err) => {
   res.status(ERROR_CODE_400).send(err);
 });
-
-  // User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
-  //   .then((user) => {
-  //     res.send(user);
-  //   })
-  //   .catch((err) => {
-  //     if (err.name === 'ValidationError') {
-  //       res.status(ERROR_CODE_400).send(err);
-  //       return;
-  //     }
-  //   res.status(ERROR_NOT_FOUND_CODE_404).send(err);
-  //   });
 };
 
 const dislikeCard = (req, res) => Card.findByIdAndUpdate(
@@ -90,13 +78,17 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => Card.findByIdAndUpdate(
-  req.query.cardId,
-  { $pull: { likes: req.query._id } },
+  req.params.cardId,
+  { $pull: { likes: req.user._id } },
   { new: true },
 ).then((card) => {
   res.status(SUCCESS_CODE_200).send(card);
 }).catch((err) => {
-  res.status(ERROR_CODE_400).send(err);
+  if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE_400).send(err);
+        return;
+      }
+    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
 });
 
 
