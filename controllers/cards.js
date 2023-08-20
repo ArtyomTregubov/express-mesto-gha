@@ -31,7 +31,11 @@ const likeCard = (req, res) => {
   { $addToSet: { likes: req.user._id } },
   { new: true },
 ).then((like) => {
-  res.status(SUCCESS_CODE_200).send(like);
+  if(like) {
+    res.status(SUCCESS_CODE_200).send(like);
+    return;
+  }
+    res.status(ERROR_NOT_FOUND_CODE_404).send({message: "Карточки не существует"});
 }).catch((err) => {
   res.status(ERROR_CODE_400).send(err);
 });
@@ -50,11 +54,16 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => Card.findByIdAndUpdate(
-  req.query.cardId,
-  { $pull: { likes: req.query._id } },
+  req.params.cardId,
+  { $pull: { likes: req.user._id } },
   { new: true },
-).then((card) => {
-  res.status(SUCCESS_CODE_200).send(card);
+).then((dislike) => {
+
+    if(dislike) {
+    res.status(SUCCESS_CODE_200).send(dislike);
+    return;
+  }
+    res.status(ERROR_NOT_FOUND_CODE_404).send({message: "Карточки не существует"});
 }).catch((err) => {
   res.status(ERROR_CODE_400).send(err);
 });
