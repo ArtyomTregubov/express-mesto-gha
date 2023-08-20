@@ -77,10 +77,8 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $pull: { likes: req.user._id } },
-  { new: true },
+const deleteCard = (req, res) => Card.deleteOne(
+  req.params.cardId
 ).then((card) => {
   res.status(SUCCESS_CODE_200).send(card);
 }).catch((err) => {
