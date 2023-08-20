@@ -30,6 +30,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/', routerUsers);
-app.use('/cards', routerCards);
+app.use('/', routerCards);
 
 app.listen(3000);

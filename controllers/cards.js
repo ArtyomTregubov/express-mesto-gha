@@ -1,7 +1,9 @@
 const Card = require('../models/card');
+const { ObjectId } = require('mongoose').Types;
+
 const {
   SUCCESS_CODE_200,
-  ERROR_CODE_400, SUCCESS_CREATE_CODE_201,
+  ERROR_CODE_400, SUCCESS_CREATE_CODE_201, ERROR_NOT_FOUND_CODE_404,
 } = require('../const/errors_code');
 // DELETE /cards/:cardId — удаляет карточку по идентификатору
 const getCards = async (req, res) => {
@@ -34,25 +36,41 @@ const dislikeCard = (req, res) => Card.findByIdAndUpdate(
 });
 
 const createCard = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const { name, link } = req.body;
 
-  Card.create({ name, about, avatar })
-    .then((user) => {
+  Card.create({  name, link, owner: ObjectId(req.user._id) }, { runValidators: true })
+    .then((card) => {
       res.status(SUCCESS_CREATE_CODE_201).send({
-        _id: user._id,
+        _id: card._id,
         name,
-        about,
-        avatar,
+        link,
+        owner
       });
     })
     .catch((err) => {
-      res.status(ERROR_CODE_400).send(err);
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE_400).send(err);
+        return;
+      }
+    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
     });
 };
+
+const deleteCard = (req, res) => Card.findByIdAndUpdate(
+  req.query.cardId,
+  { $pull: { likes: req.query._id } },
+  { new: true },
+).then((card) => {
+  res.status(SUCCESS_CODE_200).send(card);
+}).catch((err) => {
+  res.status(ERROR_CODE_400).send(err);
+});
+
 
 module.exports = {
   likeCard,
   dislikeCard,
   getCards,
   createCard,
+  deleteCard
 };
