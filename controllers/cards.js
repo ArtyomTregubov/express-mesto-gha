@@ -1,7 +1,9 @@
 const Card = require('../models/card');
 const {
   SUCCESS_CODE_200,
-  ERROR_CODE_400, SUCCESS_CREATE_CODE_201, ERROR_NOT_FOUND_CODE_404,
+  SUCCESS_CREATE_CODE_201,
+  ERROR_NOT_FOUND_CODE_404,
+  getStatusError,
 } = require('../const/errors_code');
 
 const getCards = async (req, res) => {
@@ -9,7 +11,7 @@ const getCards = async (req, res) => {
     const cards = await Card.find({ });
     res.send(cards);
   } catch (err) {
-    res.status(ERROR_CODE_400).send(err);
+    res.status(getStatusError(err)).send(err);
   }
 };
 
@@ -25,7 +27,7 @@ const likeCard = (req, res) => {
     }
     res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Карточки не существует' });
   }).catch((err) => {
-    res.status(ERROR_CODE_400).send(err);
+    res.status(getStatusError(err)).send(err);
   });
 };
 
@@ -40,7 +42,7 @@ const dislikeCard = (req, res) => Card.findByIdAndUpdate(
   }
   res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Карточки не существует' });
 }).catch((err) => {
-  res.status(ERROR_CODE_400).send(err);
+  res.status(getStatusError(err)).send(err);
 });
 
 const createCard = (req, res) => {
@@ -56,11 +58,12 @@ const createCard = (req, res) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send(err);
-        return;
-      }
-      res.status(ERROR_NOT_FOUND_CODE_404).send(err);
+      // if (err.name === 'ValidationError') {
+      //   res.status(ERROR_CODE_400).send(err);
+      //   return;
+      // }
+      // res.status(ERROR_NOT_FOUND_CODE_404).send(err);
+      res.status(getStatusError(err)).send(err);
     });
 };
 
@@ -73,15 +76,16 @@ const deleteCard = (req, res) => {
     }
     res.status(SUCCESS_CODE_200).send(card);
   }).catch((err) => {
-    if (err.name === 'ValidationError') {
-      res.status(ERROR_CODE_400).send(err);
-      return;
-    }
-    if (err.name === 'CastError') {
-      res.status(ERROR_CODE_400).send(err);
-      return;
-    }
-    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
+    // if (err.name === 'ValidationError') {
+    //   res.status(ERROR_CODE_400).send(err);
+    //   return;
+    // }
+    // if (err.name === 'CastError') {
+    //   res.status(ERROR_CODE_400).send(err);
+    //   return;
+    // }
+    // res.status(ERROR_NOT_FOUND_CODE_404).send(err);
+    res.status(getStatusError(err)).send(err);
   });
 };
 
