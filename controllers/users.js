@@ -2,7 +2,7 @@ const User = require('../models/user');
 const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
-  checkError,
+  getStatusError,
 } = require('../const/errors_code');
 
 const createUser = (req, res) => {
@@ -17,7 +17,7 @@ const createUser = (req, res) => {
         avatar,
       });
     })
-    .catch((err) => checkError(err));
+    .catch((err) => res.status(getStatusError(err)).send(err));
 };
 
 const getUser = async (req, res) => {
@@ -31,7 +31,7 @@ const getUser = async (req, res) => {
     const { name, about, avatar } = user[0];
     res.send({ name, about, avatar });
   } catch (err) {
-    checkError(err);
+    res.status(getStatusError(err)).send(err);
   }
 };
 
@@ -40,7 +40,7 @@ const updateUser = (id, params, res) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => checkError(err));
+    .catch((err) => res.status(getStatusError(err)).send(err));
 };
 
 const updateProfileInfo = async (req, res) => {
@@ -48,7 +48,7 @@ const updateProfileInfo = async (req, res) => {
   updateUser(req.user._id, { name, about }, res).then((user) => {
     res.send(user);
   })
-    .catch((err) => checkError(err));
+    .catch((err) => res.status(getStatusError(err)).send(err));
 };
 
 const updateAvatar = async (req, res) => {
@@ -56,7 +56,7 @@ const updateAvatar = async (req, res) => {
   updateUser(req.user._id, { avatar }, res).then((user) => {
     res.send(user);
   })
-    .catch((err) => checkError(err));
+    .catch((err) => res.status(getStatusError(err)).send(err));
 };
 
 const getUsers = async (req, res) => {
@@ -64,7 +64,7 @@ const getUsers = async (req, res) => {
     const users = await User.find({ });
     res.send(users);
   } catch (err) {
-    checkError(err);
+    res.status(getStatusError(err)).send(err);
   }
 };
 

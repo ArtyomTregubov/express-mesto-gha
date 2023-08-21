@@ -4,11 +4,11 @@ const ERROR_CODE_400 = 400;
 const ERROR_NOT_FOUND_CODE_404 = 404;
 const ERROR_SERVER_500 = 500;
 
-function checkError(err, res) {
+function getStatusError(err) {
   if (err.name === 'ValidationError' || err.name === 'CastError') {
-    return res.status(ERROR_CODE_400).send(err);
+    return ERROR_CODE_400;
   }
-  return res.status(ERROR_SERVER_500).send(err);
+  return ERROR_SERVER_500;
 }
 
 module.exports = {
@@ -16,5 +16,5 @@ module.exports = {
   SUCCESS_CREATE_CODE_201,
   ERROR_CODE_400,
   ERROR_NOT_FOUND_CODE_404,
-  checkError,
+  getStatusError,
 };
