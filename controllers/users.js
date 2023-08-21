@@ -1,8 +1,8 @@
 const User = require('../models/user');
 const {
   SUCCESS_CREATE_CODE_201,
-  ERROR_CODE_400,
   ERROR_NOT_FOUND_CODE_404,
+  checkError,
 } = require('../const/errors_code');
 
 const createUser = (req, res) => {
@@ -17,9 +17,7 @@ const createUser = (req, res) => {
         avatar,
       });
     })
-    .catch((err) => {
-      res.status(ERROR_CODE_400).send(err);
-    });
+    .catch((err) => checkError(err));
 };
 
 const getUser = async (req, res) => {
@@ -33,11 +31,7 @@ const getUser = async (req, res) => {
     const { name, about, avatar } = user[0];
     res.send({ name, about, avatar });
   } catch (err) {
-    if (err.name === 'CastError') {
-      res.status(ERROR_CODE_400).send(err);
-      return;
-    }
-    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
+    checkError(err);
   }
 };
 
@@ -46,38 +40,37 @@ const updateUser = (id, params, res) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send(err);
-        return;
-      }
-    res.status(ERROR_NOT_FOUND_CODE_404).send(err);
-    });
+    .catch((err) => checkError(err));
 };
 
 const updateProfileInfo = async (req, res) => {
   const { name, about } = req.body;
-  updateUser(req.user._id, { name, about }, res);
+  updateUser(req.user._id, { name, about }, res).then((user) => {
+    res.send(user);
+  })
+    .catch((err) => checkError(err));
 };
 
 const updateAvatar = async (req, res) => {
   const { avatar } = req.body;
-  updateUser(req.user._id, { avatar }, res);
+  updateUser(req.user._id, { avatar }, res).then((user) => {
+    res.send(user);
+  })
+    .catch((err) => checkError(err));
 };
-
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({ });
     res.send(users);
   } catch (err) {
-    res.status(ERROR_CODE_400).send(err);
+    checkError(err);
   }
 };
 
 const unknownLink = (req, res) => {
-  res.status(ERROR_NOT_FOUND_CODE_404).send({message: "Некорректный путь"});
-}
+  res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Некорректный путь' });
+};
 
 module.exports = {
   getUsers,
@@ -85,5 +78,5 @@ module.exports = {
   createUser,
   updateProfileInfo,
   updateAvatar,
-  unknownLink
+  unknownLink,
 };

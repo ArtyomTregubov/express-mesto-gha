@@ -1,5 +1,7 @@
 const router = require('express').Router();
-const { likeCard, dislikeCard, getCards, createCard, deleteCard } = require('../controllers/cards');
+const {
+  likeCard, dislikeCard, getCards, createCard, deleteCard,
+} = require('../controllers/cards');
 
 // POST /cards — создаёт карточку
 // DELETE /cards/:cardId — удаляет карточку по идентификатору

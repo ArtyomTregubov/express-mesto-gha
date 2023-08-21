@@ -1,30 +1,28 @@
 const mongoose = require('mongoose');
-// const Schema = mongoose.Schema
-// const ObjectId = Schema.Types.ObjectId
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Поле "name" должно быть заполнено'],
+    minlength: [2, 'Минимальная длина поля "name" - 2'],
+    maxlength: [30, 'Максимальная длина поля "name" - 30'],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'Поле "link" должно быть заполнено'],
   },
   owner: {
-    type: String,
-    required: true,
+    type: mongoose.ObjectId,
+    required: [true, 'Поле "owner" должно быть заполнено'],
   },
   likes: {
-    type: [String],
+    type: [mongoose.ObjectId],
     default: [],
   },
   createdAt: {
     type: Date,
     default: Date.now(),
   },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('card', cardSchema);
