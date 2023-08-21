@@ -58,11 +58,6 @@ const createCard = (req, res) => {
       });
     })
     .catch((err) => {
-      // if (err.name === 'ValidationError') {
-      //   res.status(ERROR_CODE_400).send(err);
-      //   return;
-      // }
-      // res.status(ERROR_NOT_FOUND_CODE_404).send(err);
       res.status(getStatusError(err)).send(err);
     });
 };
@@ -76,15 +71,6 @@ const deleteCard = (req, res) => {
     }
     res.status(SUCCESS_CODE_200).send(card);
   }).catch((err) => {
-    // if (err.name === 'ValidationError') {
-    //   res.status(ERROR_CODE_400).send(err);
-    //   return;
-    // }
-    // if (err.name === 'CastError') {
-    //   res.status(ERROR_CODE_400).send(err);
-    //   return;
-    // }
-    // res.status(ERROR_NOT_FOUND_CODE_404).send(err);
     res.status(getStatusError(err)).send(err);
   });
 };
