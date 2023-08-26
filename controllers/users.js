@@ -1,75 +1,110 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const NotFoundError404 = require('../errors/not-found-error-404');
 const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
-  getStatusError,
 } = require('../const/errors_code');
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-    .then((user) => {
-      res.status(SUCCESS_CREATE_CODE_201).send({
-        _id: user._id,
-        name,
-        about,
-        avatar,
-      });
+const createUser = (req, res, next) => {
+  const {
+    name, about, avatar, password, email,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
     })
-    .catch((err) => res.status(getStatusError(err)).send(err));
+      .then((user) => {
+        res.status(SUCCESS_CREATE_CODE_201).send({
+          _id: user._id,
+          name,
+          about,
+          avatar,
+          email,
+          password: hash,
+        });
+      })
+      .catch(next));
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const user = await User.find({ _id: id });
-    if (user.length === 0) {
+    const { email } = req.params;
+    const user = await User.findOne({ email });
+    if (!user) {
       res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Пользователь не найден' });
       return;
     }
-    const { name, about, avatar } = user[0];
+    const { name, about, avatar } = user;
     res.send({ name, about, avatar });
   } catch (err) {
-    res.status(getStatusError(err)).send(err);
+    next(err);
   }
 };
 
-const updateUser = (id, params, res) => {
+const getProfile = (req, res, next) => {
+  User.findOne({ _id: req.user._id })
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError404('Нет пользователя с таким id');
+      }
+      res.send(user);
+    })
+    .catch(next);
+};
+
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: 604800 });
+      res.send({ token });
+    })
+    .catch(next);
+};
+
+const updateUser = (id, params, res, next) => {
   User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => res.status(getStatusError(err)).send(err));
+    .catch(next);
 };
 
-const updateProfileInfo = async (req, res) => {
+const updateProfileInfo = async (req, res, next) => {
   const { name, about } = req.body;
-  updateUser(req.user._id, { name, about }, res).then((user) => {
+  updateUser(req.user._id, { name, about }, res, next).then((user) => {
     res.send(user);
   })
-    .catch((err) => res.status(getStatusError(err)).send(err));
+    .catch(next);
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req, res, next) => {
   const { avatar } = req.body;
-  updateUser(req.user._id, { avatar }, res).then((user) => {
+  updateUser(req.user._id, { avatar }, res, next).then((user) => {
     res.send(user);
   })
-    .catch((err) => res.status(getStatusError(err)).send(err));
+    .catch(next);
 };
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({ });
     res.send(users);
   } catch (err) {
-    res.status(getStatusError(err)).send(err);
+    next(err);
   }
 };
 
-const unknownLink = (req, res) => {
-  res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Некорректный путь' });
+const unknownLink = () => {
+  throw new NotFoundError404('Некорректный путь');
 };
 
 module.exports = {
@@ -79,4 +114,6 @@ module.exports = {
   updateProfileInfo,
   updateAvatar,
   unknownLink,
+  getProfile,
+  login,
 };

@@ -2,9 +2,11 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
-const { unknownLink } = require('./controllers/users');
+const errorHandling = require('./errors/errorHandling');
+const { unknownLink, createUser, login } = require('./controllers/users');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,13 +17,6 @@ const URI_MONGO = 'mongodb://localhost:27017/mestodb';
 mongoose.connect(URI_MONGO);
 // mongoose.connect('mongodb://admin:admin@127.0.0.1:27017/mestodb?authSource=admin');
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64e0a30776df3d30e45511ba',
-  };
-  next();
-});
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -30,7 +25,11 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use('/', routerUsers);
 app.use('/', routerCards);
 app.use('*', unknownLink);
+app.use(errors());
+app.use(errorHandling);
 app.listen(3000);
