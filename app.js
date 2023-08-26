@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { signupValidator } = require('./utils/validation_joi');
 const { errors } = require('celebrate');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
@@ -13,8 +14,8 @@ app.use(bodyParser.json());
 
 const URI_MONGO = 'mongodb://localhost:27017/mestodb';
 
-// mongoose.connect(URI_MONGO);
-mongoose.connect('mongodb://admin:admin@127.0.0.1:27017/mestodb?authSource=admin');
+mongoose.connect(URI_MONGO);
+// mongoose.connect('mongodb://admin:admin@127.0.0.1:27017/mestodb?authSource=admin');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -25,13 +26,17 @@ const limiter = rateLimit({
 
 app.use(limiter);
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', signupValidator, createUser);
 app.use('/', routerUsers);
 app.use('/', routerCards);
 app.use('*', unknownLink);
 app.use(errors());
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
+  let { statusCode = 500 } = err;
+  const { message } = err;
+  if (err.name === 'ValidationError' || err.name === 'CastError') {
+    statusCode = 400;
+  }
 
   res
     .status(statusCode)
@@ -40,5 +45,6 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
 app.listen(3000);

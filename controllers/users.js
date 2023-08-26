@@ -5,7 +5,7 @@ const NotFoundError404 = require('../errors/not-found-error-404');
 const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
-} = require('../const/errors_code');
+} = require('../utils/errors_code');
 
 const createUser = (req, res, next) => {
   const {
