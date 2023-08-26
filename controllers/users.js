@@ -2,27 +2,29 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const NotFoundError404 = require('../errors/not-found-error-404');
+const ConflictError409 = require('../errors/conflict-error-409');
 const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
 } = require('../utils/errors_code');
 
-const createUser = (req, res, next) => {
+const createUser = async (req, res, next) => {
   const {
     name, about, avatar, password, email,
   } = req.body;
+  const checkedUser = await User.findOne({ email });
+  if (checkedUser) { next(new ConflictError409('Пользователь существует')); return; }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((user) => {
+      .then((err, user) => {
         res.status(SUCCESS_CREATE_CODE_201).send({
           _id: user._id,
           name,
           about,
           avatar,
           email,
-          password: hash,
         });
       })
       .catch(next));
