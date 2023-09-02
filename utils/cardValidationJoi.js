@@ -9,6 +9,13 @@ const cardValidator = celebrate({
   }),
 });
 
+const cardIdValidator = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().pattern(/\d+/),
+  }),
+});
+
 module.exports = {
   cardValidator,
+  cardIdValidator,
 };
