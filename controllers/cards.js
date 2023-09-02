@@ -40,21 +40,14 @@ const createCard = (req, res, next) => {
     .catch(next);
 };
 
-const deleteCard = async (req, res, next) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  try {
-    const cardData = await Card.findOne({ _id: cardId });
-    const { owner } = JSON.parse(JSON.stringify(cardData));
-    if (owner !== req.user._id) { next(new ForbiddeError403('Недостаточно прав для удаления карточки')); return; }
-    Card.deleteOne({ _id: cardId }, { runValidators: true }).then((card) => {
-      if (!card.deletedCount) { next(new NotFoundError404('Карточки не существует')); return; }
-      res.send(card);
+  Card.findById(cardId)
+    .then((card) => {
+      if (!card) { next(new NotFoundError404('Карточки не существует')); return; }
+      if (card.owner !== req.user._id) { next(new ForbiddeError403('Недостаточно прав')); return; }
+      card.remove();
     }).catch(next);
-  } catch (err) {
-    if (err.message.includes('Cast to ObjectId failed for value')) {
-      next(new NotFoundError404('Карточки не существует'));
-    }
-  }
 };
 
 module.exports = {
