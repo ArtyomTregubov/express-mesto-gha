@@ -46,8 +46,8 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) { next(new NotFoundError404('Карточки не существует')); return; }
       if (card.owner.toString() !== req.user._id) { next(new ForbiddeError403('Недостаточно прав')); return; }
-      return Card.findByIdAndRemove(cardId);
-    }).then(res.send({ message: `Карточка ${cardId} удалена` })).catch(next);
+      return Card.findByIdAndRemove(cardId).then(res.send({ message: `Карточка ${cardId} удалена` }));
+    }).catch(next);
 };
 
 module.exports = {
