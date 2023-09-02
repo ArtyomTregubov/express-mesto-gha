@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const NotFoundError404 = require('../errors/notFoundError404');
 const ConflictError409 = require('../errors/conflictError409');
-const UnauthorizedError401 = require("../errors/unauthorizedError401");
+const UnauthorizedError401 = require('../errors/unauthorizedError401');
 
 const createUser = async (req, res, next) => {
   const {
@@ -48,7 +48,7 @@ const login = (req, res, next) => {
       );
       res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 604800 }).send({ token });
     })
-    .catch(next(new UnauthorizedError401('Необходима авторизация')));
+    .catch(() => next(new UnauthorizedError401('Необходима авторизация')));
 };
 
 const updateUser = (id, params, res, next) => User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
