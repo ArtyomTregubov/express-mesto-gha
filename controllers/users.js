@@ -1,12 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const NotFoundError404 = require('../errors/not-found-error-404');
-const ConflictError409 = require('../errors/conflict-error-409');
-const {
-  SUCCESS_CREATE_CODE_201,
-  ERROR_NOT_FOUND_CODE_404,
-} = require('../errors/errors_code');
+const NotFoundError404 = require('../errors/NotFoundError404');
+const ConflictError409 = require('../errors/ConflictError409');
 
 const createUser = async (req, res, next) => {
   const {
