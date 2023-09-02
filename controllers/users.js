@@ -48,7 +48,7 @@ const login = (req, res, next) => {
       );
       res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 604800 }).send({ token });
     })
-    .catch(() => next(new UnauthorizedError401('Необходима авторизация')));
+    .catch(next(new UnauthorizedError401('Необходима авторизация')));
 };
 
 const updateUser = (id, params, res, next) => User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
