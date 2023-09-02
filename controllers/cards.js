@@ -44,7 +44,6 @@ const deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
   try {
     const cardData = await Card.findOne({ _id: cardId });
-    if (!cardData) { next(new NotFoundError404('Карточки не существует')); return; }
     const { owner } = JSON.parse(JSON.stringify(cardData));
     if (owner !== req.user._id) { next(new ForbiddeError403('Недостаточно прав для удаления карточки')); return; }
     Card.deleteOne({ _id: cardId }, { runValidators: true }).then((card) => {
