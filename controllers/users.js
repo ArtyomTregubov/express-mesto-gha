@@ -22,8 +22,8 @@ const createUser = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const { email } = req.params;
-    const user = await User.findOne({ email });
+    const { id } = req.params;
+    const user = await User.findOne({ _id: id });
     if (!user) { next(new NotFoundError404('Пользователь не найден')); return; }
     res.send(user);
   } catch (err) {
@@ -54,13 +54,11 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
-const updateUser = (id, params, res, next) => {
-  User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
-    .then((user) => {
-      res.send(user);
-    })
-    .catch(next);
-};
+const updateUser = (id, params, res, next) => User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
+  .then((user) => {
+    res.send(user);
+  })
+  .catch(next);
 
 const updateProfileInfo = async (req, res, next) => {
   const { name, about } = req.body;
