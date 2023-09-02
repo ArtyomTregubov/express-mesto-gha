@@ -19,13 +19,7 @@ const createUser = async (req, res, next) => {
       name, about, avatar, email, password: hash,
     })
       .then((user) => {
-        res.status(SUCCESS_CREATE_CODE_201).send({
-          _id: user._id,
-          name,
-          about,
-          avatar,
-          email,
-        });
+        res.send(user);
       })
       .catch(next));
 };
@@ -34,12 +28,8 @@ const getUser = async (req, res, next) => {
   try {
     const { email } = req.params;
     const user = await User.findOne({ email });
-    if (!user) {
-      res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Пользователь не найден' });
-      return;
-    }
-    const { name, about, avatar } = user;
-    res.send({ name, about, avatar });
+    if (!user) { next(new NotFoundError404('Пользователь не найден')); return; }
+    res.send(user);
   } catch (err) {
     next(err);
   }
@@ -48,9 +38,6 @@ const getUser = async (req, res, next) => {
 const getProfile = (req, res, next) => {
   User.findOne({ _id: req.user._id })
     .then((user) => {
-      // if (!user) {
-      //   throw new NotFoundError404('Нет пользователя с таким id');
-      // }
       res.send(user);
     })
     .catch(next);
