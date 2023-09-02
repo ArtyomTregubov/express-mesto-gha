@@ -14,9 +14,7 @@ const createUser = async (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((user) => {
-        res.send(user);
-      })
+      .then((user) => res.send(user))
       .catch(next));
 };
 
@@ -33,9 +31,7 @@ const getUser = async (req, res, next) => {
 
 const getProfile = (req, res, next) => {
   User.findOne({ _id: req.user._id })
-    .then((user) => {
-      res.send(user);
-    })
+    .then((user) => res.send(user))
     .catch(next);
 };
 
@@ -55,24 +51,18 @@ const login = (req, res, next) => {
 };
 
 const updateUser = (id, params, res, next) => User.findByIdAndUpdate(id, params, { new: true, runValidators: true })
-  .then((user) => {
-    res.send(user);
-  })
+  .then((user) => res.send(user))
   .catch(next);
 
 const updateProfileInfo = async (req, res, next) => {
   const { name, about } = req.body;
-  updateUser(req.user._id, { name, about }, res, next).then((user) => {
-    res.send(user);
-  })
+  updateUser(req.user._id, { name, about }, res, next).then((user) => res.send(user))
     .catch(next);
 };
 
 const updateAvatar = async (req, res, next) => {
   const { avatar } = req.body;
-  updateUser(req.user._id, { avatar }, res, next).then((user) => {
-    res.send(user);
-  })
+  updateUser(req.user._id, { avatar }, res, next).then((user) => res.send(user))
     .catch(next);
 };
 
