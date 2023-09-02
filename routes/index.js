@@ -3,7 +3,7 @@ const routerUsers = require('./users');
 const routerCards = require('./cards');
 const auth = require('../middlewares/auth');
 const { unknownLink, createUser, login } = require('../controllers/users');
-const { signupValidator, signinValidator } = require('../utils/validation_joi');
+const { signupValidator, signinValidator } = require('../utils/userValidationJoi');
 
 router.post('/signin', signinValidator, login);
 router.post('/signup', signupValidator, createUser);
