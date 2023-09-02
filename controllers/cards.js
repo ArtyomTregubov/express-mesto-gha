@@ -1,78 +1,52 @@
 const Card = require('../models/card');
-const {
-  SUCCESS_CODE_200,
-  SUCCESS_CREATE_CODE_201,
-  ERROR_NOT_FOUND_CODE_404,
-  getStatusError,
-} = require('../errors/errors_code');
+const NotFoundError404 = require('../errors/notFoundError404');
 
-const getCards = async (req, res) => {
+const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({ });
+    if (!cards) { next(new NotFoundError404('Пользователь не найден')); return; }
     res.send(cards);
   } catch (err) {
-    res.status(getStatusError(err)).send(err);
+    next(err);
   }
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   ).then((like) => {
-    if (like) {
-      res.status(SUCCESS_CODE_200).send(like);
-      return;
-    }
-    res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Карточки не существует' });
-  }).catch((err) => {
-    res.status(getStatusError(err)).send(err);
-  });
+    if (!like) { next(new NotFoundError404('Карточки не существует')); return; }
+    res.send(like);
+  }).catch(next);
 };
 
-const dislikeCard = (req, res) => Card.findByIdAndUpdate(
+const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   req.params.cardId,
   { $pull: { likes: req.user._id } },
   { new: true },
 ).then((dislike) => {
-  if (dislike) {
-    res.status(SUCCESS_CODE_200).send(dislike);
-    return;
-  }
-  res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Карточки не существует' });
-}).catch((err) => {
-  res.status(getStatusError(err)).send(err);
-});
+  if (!dislike) { next(new NotFoundError404('Карточки не существует')); return; }
+  res.send(dislike);
+}).catch(next);
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
-      res.status(SUCCESS_CREATE_CODE_201).send({
-        _id: card._id,
-        name,
-        link,
-        owner,
-      });
+      res.send(card);
     })
-    .catch((err) => {
-      res.status(getStatusError(err)).send(err);
-    });
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.deleteOne({ _id: cardId }, { runValidators: true }).then((card) => {
-    if (!card.deletedCount) {
-      res.status(ERROR_NOT_FOUND_CODE_404).send({ message: 'Карточки не существует' });
-      return;
-    }
-    res.status(SUCCESS_CODE_200).send(card);
-  }).catch((err) => {
-    res.status(getStatusError(err)).send(err);
-  });
+    if (!card.deletedCount) { next(new NotFoundError404('Карточки не существует')); return; }
+    res.send(card);
+  }).catch(next);
 };
 
 module.exports = {

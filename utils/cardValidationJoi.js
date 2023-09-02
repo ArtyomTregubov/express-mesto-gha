@@ -11,7 +11,7 @@ const cardValidator = celebrate({
 
 const cardIdValidator = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().pattern(/\d+/),
+    cardId: Joi.string().required().pattern(/\d+/),
   }),
 });
 
