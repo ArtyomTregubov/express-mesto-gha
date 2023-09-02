@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError404 = require('../errors/notFoundError404');
-const ForbiddeError403 = require("../errors/forbiddeError403");
+const ForbiddeError403 = require('../errors/forbiddeError403');
 
 const getCards = async (req, res, next) => {
   try {
@@ -42,12 +42,20 @@ const createCard = (req, res, next) => {
 
 const deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
-  const { owner } = JSON.parse(JSON.stringify(await Card.findOne({ _id: cardId })));
-  if (owner !== req.user._id) { next(new ForbiddeError403('Недостаточно прав для удаления карточки')); return; }
-  Card.deleteOne({ _id: cardId }, { runValidators: true }).then((card) => {
-    if (!card.deletedCount) { next(new NotFoundError404('Карточки не существует')); return; }
-    res.send(card);
-  }).catch(next);
+  try {
+    const cardData = await Card.findOne({ _id: cardId });
+    if (!cardData) { next(new NotFoundError404('Карточки не существует')); return; }
+    const { owner } = JSON.parse(JSON.stringify(cardData));
+    if (owner !== req.user._id) { next(new ForbiddeError403('Недостаточно прав для удаления карточки')); return; }
+    Card.deleteOne({ _id: cardId }, { runValidators: true }).then((card) => {
+      if (!card.deletedCount) { next(new NotFoundError404('Карточки не существует')); return; }
+      res.send(card);
+    }).catch(next);
+  } catch (err) {
+    if (err.message.includes('Cast to ObjectId failed for value')) {
+      next(new NotFoundError404('Карточки не существует'));
+    }
+  }
 };
 
 module.exports = {
