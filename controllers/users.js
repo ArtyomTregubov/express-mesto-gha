@@ -67,7 +67,8 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: 604800 });
-      res.send({ token });
+      res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 604800 });
+      res.send({ token, jwt: token });
     })
     .catch(next);
 };
