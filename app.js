@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const { signupValidator } = require('./utils/validation_joi');
+const { signupValidator, signinValidator } = require('./utils/validation_joi');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { unknownLink, createUser, login } = require('./controllers/users');
@@ -25,7 +25,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.post('/signin', login);
+app.post('/signin', signinValidator, login);
 app.post('/signup', signupValidator, createUser);
 app.use('/', routerUsers);
 app.use('/', routerCards);
@@ -34,7 +34,9 @@ app.use(errors());
 app.use((err, req, res, next) => {
   let { statusCode = 500 } = err;
   const { message } = err;
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
+  if (message === 'Неправильные почта или пароль') {
+    statusCode = 401;
+  } else if (err.name === 'ValidationError' || err.name === 'CastError') {
     statusCode = 400;
   }
 

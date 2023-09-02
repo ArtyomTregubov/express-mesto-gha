@@ -18,7 +18,7 @@ const createUser = async (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((err, user) => {
+      .then((user, err) => {
         res.status(SUCCESS_CREATE_CODE_201).send({
           _id: user._id,
           name,

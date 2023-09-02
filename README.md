@@ -16,3 +16,4 @@ https://github.com/ArtyomTregubov/express-mesto-gha
 `npm run start` — запускает сервер  
 `npm run dev` — запускает сервер с hot-reload  
 `node --inspect app.js` — запускает сервер в дебаг режиме  
+`npm run lint` — запускает проверку и исправление линтером  
