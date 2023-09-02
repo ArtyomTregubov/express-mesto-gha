@@ -6,7 +6,7 @@ const ConflictError409 = require('../errors/conflict-error-409');
 const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
-} = require('../utils/errors_code');
+} = require('../errors/errors_code');
 
 const createUser = async (req, res, next) => {
   const {
@@ -18,7 +18,7 @@ const createUser = async (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((user, err) => {
+      .then((user) => {
         res.status(SUCCESS_CREATE_CODE_201).send({
           _id: user._id,
           name,
@@ -48,9 +48,9 @@ const getUser = async (req, res, next) => {
 const getProfile = (req, res, next) => {
   User.findOne({ _id: req.user._id })
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError404('Нет пользователя с таким id');
-      }
+      // if (!user) {
+      //   throw new NotFoundError404('Нет пользователя с таким id');
+      // }
       res.send(user);
     })
     .catch(next);
@@ -66,9 +66,7 @@ const login = (req, res, next) => {
         'some-secret-key',
         { expiresIn: '7d' },
       );
-      res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: 604800 });
-      res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 604800 });
-      res.send({ token, jwt: token });
+      res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 604800 }).send({ token });
     })
     .catch(next);
 };

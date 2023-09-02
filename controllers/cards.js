@@ -4,7 +4,7 @@ const {
   SUCCESS_CREATE_CODE_201,
   ERROR_NOT_FOUND_CODE_404,
   getStatusError,
-} = require('../utils/errors_code');
+} = require('../errors/errors_code');
 
 const getCards = async (req, res) => {
   try {

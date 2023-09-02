@@ -5,14 +5,14 @@ const {
   getUsers, updateProfileInfo, updateAvatar, getProfile,
 } = require('../controllers/users');
 
-router.get('/users', auth, getUsers);
+router.get('/', auth, getUsers);
 
-router.get('/users/me', auth, getProfile);
+router.get('/me', auth, getProfile);
 
 // router.get('/users/:id', auth, getUser);
 
-router.patch('/users/me', auth, updateProfileInfo);
+router.patch('/me', auth, updateProfileInfo);
 
-router.patch('/users/me/avatar', auth, updateAvatar);
+router.patch('/me/avatar', auth, updateAvatar);
 
 module.exports = router;
