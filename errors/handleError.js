@@ -2,7 +2,7 @@ const handleError = (err, req, res, next) => {
   const { message } = err;
   let { statusCode = 500 } = err;
   if (err.name === 'CastError') {
-    statusCode = 404;
+    statusCode = 400;
   }
   res
     .status(statusCode)

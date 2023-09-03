@@ -1,3 +1,3 @@
-const regExp = /https?:\/\/[-._~:/?#[\]@!$&'()*+,;=\w]+/;
+const regExpUrl = /https?:\/\/[\w-]+\.[-._~:/?#[\]@!$&'()*+,;=\w]+/;
 
-module.exports = regExp;
+module.exports = regExpUrl;

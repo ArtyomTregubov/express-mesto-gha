@@ -9,14 +9,20 @@ const createUser = async (req, res, next) => {
   const {
     name, about, avatar, password, email,
   } = req.body;
-  const checkedUser = await User.findOne({ email });
-  if (checkedUser) { next(new ConflictError409('Пользователь существует')); return; }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
       .then((user) => res.send(user))
-      .catch(next));
+      .catch((err) => {
+        if (err.code === 11000) {
+          next(new ConflictError409(
+            `Пользователь с email '${email}' уже существует.`,
+          ));
+          return;
+        }
+        next(err);
+      }));
 };
 
 const getUser = async (req, res, next) => {

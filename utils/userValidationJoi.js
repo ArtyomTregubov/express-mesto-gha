@@ -1,12 +1,12 @@
 const { celebrate, Joi } = require('celebrate');
 
-const regExp = require('./regExp');
+const regExpUrl = require('./regExp');
 
 const signupValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(regExp),
+    avatar: Joi.string().pattern(regExpUrl),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -21,7 +21,7 @@ const signinValidator = celebrate({
 
 const userIdValidator = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().pattern(/\d+/),
+    id: Joi.string().length(24).hex().required(),
   }),
 });
 
@@ -34,7 +34,7 @@ const userMeValidator = celebrate({
 
 const userMeAvatarValidator = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(regExp),
+    avatar: Joi.string().pattern(regExpUrl),
   }),
 });
 
